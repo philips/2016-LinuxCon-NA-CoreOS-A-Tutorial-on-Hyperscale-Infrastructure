@@ -102,9 +102,8 @@ func findMessages() {
 
 	for _, n := range phoneNumbers {
 		last, err := outbox.Get(n)
-		if err != nil {
-			fmt.Println(err)
-			continue
+		if last == "" {
+			last = "0"
 		}
 		l, err := strconv.Atoi(last)
 		if err != nil {
@@ -161,7 +160,11 @@ func sendTwilio(number string, msg string) {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	// Make request
-	resp, _ := client.Do(req)
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	fmt.Println(resp.Status)
 	//fmt.Printf("%v\n", req)
 }
