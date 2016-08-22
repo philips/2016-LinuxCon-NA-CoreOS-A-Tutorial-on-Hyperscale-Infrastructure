@@ -6,7 +6,6 @@ This presentation was given at LinuxCon 2016 in Toronto. There was a live tutori
 
 ## etcd Basics
 
-
 **Pre-requisites**
 
 - [etcd and etcdctl](https://github.com/coreos/etcd/releases/tag/v3.0.6) for your platform
@@ -62,9 +61,7 @@ toronto
 {"header":{"cluster_id":17237436991929493444,"member_id":9372538179322589801,"revision":11,"raft_term":2},"kvs":[{"key":"Zm9v","create_revision":2,"mod_revision":11,"version":10,"value":"dG9yb250bw=="}],"count":1}
 ```
 
-
 ## etcd Clustering
-
 
 **Pre-requisites**
 
@@ -84,6 +81,18 @@ fd422379fda50e48, started, infra3, http://127.0.0.1:32380, http://127.0.0.1:3237
 
 ## Building an Application
 
+**Pre-Requisites**
+
+- A working local Docker client (`brew install docker`)
+- A VM to run Docker, recommend [minikube](https://github.com/kubernetes/minikube/releases)
+
+```
+git clone https://github.com/philips/2016-LinuxCon-NA-CoreOS-A-Tutorial-on-Hyperscale-Infrastructure
+cd guestbook/v1
+eval $(minikube docker-env)
+VERSION=v1 REGISTRY=quay.io/philips make build
+```
+
 ## Kubernetes App Deployments
 
 **Pre-Requisites**
@@ -98,7 +107,7 @@ fd422379fda50e48, started, infra3, http://127.0.0.1:32380, http://127.0.0.1:3237
 First, lets run the app that we 
 
 ```
-kubectl run guestbook --image quay.io/philips/guestbook:v4 -l app=guestbook
+kubectl run guestbook --image quay.io/philips/guestbook:v1 -l app=guestbook
 ```
 
 Confirm that the application is running by selecting all things that have `app=guestbook`:
@@ -128,7 +137,7 @@ kubectl delete deployment guestbook
 Setup the application to run again
 
 ```
-kubectl run guestbook --image quay.io/philips/guestbook:v4 -l app=guestbook
+kubectl run guestbook --image quay.io/philips/guestbook:v1 -l app=guestbook
 ```
 
 ```
@@ -167,7 +176,7 @@ Port forwarding is fun, but this isn't terribly useful as no one outside of the 
 
 ```
 kubectl delete deployment guestbook
-kubectl run guestbook --image quay.io/philips/guestbook:v4 -l app=guestbook --expose --port 3000
+kubectl run guestbook --image quay.io/philips/guestbook:v1 -l app=guestbook --expose --port 3000
 ```
 
 Now the service will have a cluster IP that is routable to other nodes on the cluster.
@@ -216,4 +225,6 @@ redis-master.default.svc.cluster.local. 30 IN A 10.3.0.25
 ```
 
 For more [network debugging tips see this page](https://github.com/coreos/docs/blob/master/kubernetes/network-troubleshooting.md).
+
+## Using Kubernetes in a Development Workflow
 
