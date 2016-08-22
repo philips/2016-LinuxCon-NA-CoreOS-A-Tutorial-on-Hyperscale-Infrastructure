@@ -2,7 +2,7 @@
 
 This tutorial will demo a number of technologies. The requirements for completing each section will be introduced in the section.
 
-This presentation was given at LinuxCon 2016 in Toronto. There was a live tutorial given and the video is not yet available. However, there are [slides](https://speakerdeck.com/philips/2016-LinuxCon-NA-CoreOS-A-Tutorial-on-Hyperscale-Infrastructure).
+This presentation was given at LinuxCon 2016 in Toronto. There was a live tutorial given and the video is not yet available. However, there are [slides](https://speakerdeck.com/philips/coreos-a-tutorial-on-hyperscale-infrastructure).
 
 ## etcd Basics
 
