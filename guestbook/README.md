@@ -1,3 +1,9 @@
+# Introduction
+
+This is a live tutorial given at LinuxCon 2016 North America. It is designed to introduce all of the basic concepts of CoreOS and Kubernetes as a platform for application management and distributed systems.
+
+Slides: https://speakerdeck.com/philips/coreos-a-tutorial-on-hyperscale-infrastructure
+
 ## Building Guestbook
 
 Releasing the image requires that you have access to the registry user account which will host the image. You can specify the registry including the user account by setting the environment variable `REGISTRY`.
