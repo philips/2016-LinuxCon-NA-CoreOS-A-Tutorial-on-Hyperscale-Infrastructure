@@ -13,7 +13,7 @@ spec:
         app: guestbook
     spec:
       containers:
-      - image: quay.io/philips/guestbook:v4
+      - image: quay.io/philips/guestbook:v2
         name: guestbook
         ports:
         - containerPort: 3000

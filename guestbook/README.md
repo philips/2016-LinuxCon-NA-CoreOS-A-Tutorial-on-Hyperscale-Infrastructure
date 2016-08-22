@@ -16,3 +16,19 @@ If you want to, you can build and push the image step by step:
     make clean
     make build
     make push
+
+
+## Developing
+
+Port forward redis to localhost
+
+```
+kubectl port-forward $(kubectl get pods -l app=redis,role=master -o template --template="{{range.items}}{{.metadata.name}}{{end}}") 6380:6379
+kubectl port-forward $(kubectl get pods -l app=redis,role=slave -o template --template="{{range.items}}{{.metadata.name}}{{end}}") 6379:6379
+```
+
+Tell the app to use those ports
+
+```
+REDIS_SLAVE=localhost:6379 REDIS_MASTER=localhost:6380 go run main.go
+```
