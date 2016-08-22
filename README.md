@@ -78,7 +78,7 @@ Members of the cluster can be listed like this:
 91bc3c398fb3c146, started, infra2, http://127.0.0.1:22380, http://127.0.0.1:22379
 fd422379fda50e48, started, infra3, http://127.0.0.1:32380, http://127.0.0.1:32379
 ```
-
+ 
 ## Building an Application
 
 **Pre-Requisites**
@@ -93,6 +93,43 @@ eval $(minikube docker-env)
 VERSION=v1 REGISTRY=quay.io/philips make build
 VERSION=v1 REGISTRY=quay.io/philips make push
 ```
+
+## Running a Single Container
+
+**Pre-Requisites**
+- Any CoreOS virtual machine and SSH session
+
+Now that we have built the container it is easy to run on a virtual machine with rkt:
+
+```
+rkt fetch docker://quay.io/philips/guestbook:v1 --insecure-options=image
+```
+
+Now, one thing to note is that rkt does not have a daemon. So, we really on your system init system to monitor the process. To do that quickly under systemd do something like this:
+
+```
+systemd-run rkt fetch docker://quay.io/philips/guestbook:v1 --insecure-options=image
+```
+
+Or with docker:
+
+```
+docker run quay.io/philips/guestbook:v1 
+```
+
+## Debugging with Toolbox
+
+**Pre-Requisites**
+- Any CoreOS virtual machine and SSH session
+
+With fewer pieces of software on the host what happens to debugging tools? CoreOS provides a quick solution with `toolbox`:
+
+```
+toolbox
+```
+
+The environment can be customized to run any container whether that is Debian, Ubuntu, Fedora, Arch, etc.
+
 
 ## Kubernetes Basics
 
