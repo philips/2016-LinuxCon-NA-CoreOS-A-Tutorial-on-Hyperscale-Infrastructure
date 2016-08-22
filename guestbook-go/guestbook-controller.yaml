@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: guestbook
+  name: guestbook
+spec:
+  replicas: 3
+  selector:
+    app: guestbook
+  template:
+    metadata:
+      labels:
+        app: guestbook
+    spec:
+      containers:
+      - image: quay.io/philips/guestbook:v4
+        name: guestbook
+        ports:
+        - containerPort: 3000
+          name: http-server
+
