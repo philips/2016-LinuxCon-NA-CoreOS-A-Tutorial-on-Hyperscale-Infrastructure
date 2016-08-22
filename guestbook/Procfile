@@ -1,0 +1,2 @@
+master: kubectl port-forward $(kubectl get pods -l app=redis,role=master -o template --template="{{range.items}}{{.metadata.name}}{{end}}") 6380:6379
+slave: kubectl port-forward $(kubectl get pods -l app=redis,role=slave -o template --template="{{range.items}}{{.metadata.name}}{{end}}") 6379:6379

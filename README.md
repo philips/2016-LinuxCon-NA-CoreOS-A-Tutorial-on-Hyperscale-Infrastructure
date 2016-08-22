@@ -91,9 +91,10 @@ git clone https://github.com/philips/2016-LinuxCon-NA-CoreOS-A-Tutorial-on-Hyper
 cd guestbook/v1
 eval $(minikube docker-env)
 VERSION=v1 REGISTRY=quay.io/philips make build
+VERSION=v1 REGISTRY=quay.io/philips make push
 ```
 
-## Kubernetes App Deployments
+## Kubernetes Basics
 
 **Pre-Requisites**
 
@@ -103,8 +104,27 @@ VERSION=v1 REGISTRY=quay.io/philips make build
 - [kubectl 1.3.4+](https://coreos.com/kubernetes/docs/latest/configure-kubectl.html) installed and in your path
 - Follow the [Kubernetes + CoreOS + AWS docs](https://coreos.com/kubernetes/docs/latest/kubernetes-on-aws.html). 
 
+With a working Kubernetes cluster it is possible to proxy through to localhost for development without having to worry about auth:
 
-First, lets run the app that we 
+```
+kubectl proxy
+```
+
+From there the API becomes very accessible using well-known tools like curl:
+
+```
+curl 127.0.0.1:8001/api/v1/services
+```
+
+The equivalent of this rest API call is:
+
+```
+kubectl describes services
+```
+
+## Kubernetes App Deployments
+
+First, lets run the app that was built earlier and pushed to quay.io.
 
 ```
 kubectl run guestbook --image quay.io/philips/guestbook:v1 -l app=guestbook
@@ -118,7 +138,7 @@ NAME                         READY     STATUS    RESTARTS   AGE
 guestbook-2893398214-x04rm   1/1       Running   0          4m
 ```
 
-Neat! Now, lets connect to our application by selecting that pod process and forwarding the port.
+Neat! Now, connect to our application by selecting that pod process and forwarding the port.
 
 ```
 kubectl port-forward $(kubectl get pods -l app=guestbook -o template --template="{{range.items}}{{.metadata.name}}{{end}}") 3000:3000
@@ -134,17 +154,14 @@ kubectl delete deployment guestbook
 
 ## Kubernetes App Failures
 
-Setup the application to run again
+Setup the application to run again using the kubectl run subcommand.
 
 ```
 kubectl run guestbook --image quay.io/philips/guestbook:v1 -l app=guestbook
-```
-
-```
 kubectl get pods -l app=guestbook
 ```
 
-Kubernetes won't will allow the app to be killed.
+Kubernetes will allow the app instance to be killed.
 
 ```
 kubectl delete guestbook-2893398214-ikc58
@@ -172,7 +189,7 @@ kubectl scale deployment guestbook --replicas=3
 
 ## Kubernetes Services
 
-Port forwarding is fun, but this isn't terribly useful as no one outside of the cluster can reach our application. Delete the deployment and lets try exposing a port:
+Earlier we used port forwarding to confirm the application was running. This is fun, but this isn't terribly useful as no one outside of the cluster can reach our application. Delete the deployment and lets try exposing a port:
 
 ```
 kubectl delete deployment guestbook
@@ -228,3 +245,36 @@ For more [network debugging tips see this page](https://github.com/coreos/docs/b
 
 ## Using Kubernetes in a Development Workflow
 
+**Pre-Requisites**
+
+- A working [Go environment](https://golang.org/doc/install)
+- A working redis cluster from above
+- goreman or another Procfile runner (`go get github.com/mattn/goreman`) 
+
+It is very useful to be able to hack on code locally while using services running the cluster. Let's walk through the development workflow for the Guestbook service.
+
+First, this setup is really naive so it only works when there is only one slave. Scale the slave replica set down to 1.
+
+```
+kubectl scale rs redis-slave --replicas=1
+```
+
+Now, inside of the guestbook subdirectory of this repo there is a Procfile. When ran with `goreman start` it will forward the redis master and slave.
+
+```
+goreman start
+```
+
+At this point you now have the live cluster database forwarding locally. This can be confirmed by querying the redis database using the CLI tooling:
+
+```
+redis-cli -h 127.0.0.1 -p 6380 keys '*'
+```
+
+Now hacking on the application is easy, simply go into the v2 directory and run:
+
+```
+REDIS_SLAVE=localhost:6379 REDIS_MASTER=localhost:6380 go run main.go
+```
+
+Its the best of both worlds!
