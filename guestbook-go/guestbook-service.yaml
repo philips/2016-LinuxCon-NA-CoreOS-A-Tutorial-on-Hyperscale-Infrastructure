@@ -6,7 +6,7 @@ metadata:
   name: guestbook
 spec:
   ports:
-  - port: 3000
+  - port: 80
     targetPort: http-server
   selector:
     app: guestbook
